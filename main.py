@@ -1,11 +1,11 @@
 import tensorflow as tf
-import tensorflow.keras.backend as K
+import keras
 print('TensorFlow version is:', tf.__version__)
 
-from tensorflow.keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
-from tensorflow.keras.layers import Input, Conv2D, Dense, Add, Flatten, BatchNormalization, Dropout
-from tensorflow.keras.layers import GlobalAveragePooling2D, MaxPooling2D, Concatenate, Activation
-from tensorflow.keras import Model, optimizers
+from keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
+from keras.layers import Input, Conv2D, Dense, Add, Flatten, BatchNormalization, Dropout
+from keras.layers import GlobalAveragePooling2D, MaxPooling2D, Concatenate, Activation
+from keras import Model, optimizers
 
 import os, glob, numpy as np, time, shutil, pickle, matplotlib.pyplot as plt, cv2
 from sklearn.model_selection import train_test_split
@@ -48,7 +48,21 @@ print('dataset shape:', X.shape)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=18)
 
-print('show a random image from the dataset:')
 rnd_idx = np.random.choice(a=len(X), size=None)
 plt.imshow(X=X[rnd_idx].squeeze(), cmap='gray')
+plt.axis('off')
+plt.title(label='a random image from the dataset')
 plt.show()
+
+
+# data augmentation using keras
+augmenter = ImageDataGenerator(rotation_range=90, brightness_range=(0.75, 1.25), zoom_range=(0.75, 1.25),
+                               horizontal_flip=True, vertical_flip=True, rescale=None)
+test_augmenter = ImageDataGenerator(rescale=None)
+
+# callbacks
+checkpoint = keras.callbacks.ModelCheckpoint(filepath='./checkpoints/eps={epoch:03d}_valAcc={val_accuracy:.4f}.hdf5',
+                                             monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+cb_list = [checkpoint]
+
+
