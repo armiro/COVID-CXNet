@@ -6,9 +6,9 @@ Detecting the novel coronavirus (aka 2019-nCov or CoVid19) from frontal chest X-
 
 The project is in early stages and a pretty huge amount of new images are still in progress
 Some test snapshots of the basic model on random data from the external dataset:
-![case_1](https://github.com/armiro/Covid19-Detection/tree/master/documents/case#1.png)
-![case_2](https://github.com/armiro/Covid19-Detection/tree/master/documents/case#2.png)
-![case_3](https://github.com/armiro/Covid19-Detection/tree/master/documents/case#3.png)
-![case_4](https://github.com/armiro/Covid19-Detection/tree/master/documents/case#4.png)
+![case_1](https://github.com/armiro/Covid19-Detection/tree/master/documents/case%231.png)
+![case_2](https://github.com/armiro/Covid19-Detection/tree/master/documents/case%232.png)
+![case_3](https://github.com/armiro/Covid19-Detection/tree/master/documents/case%233.png)
+![case_4](https://github.com/armiro/Covid19-Detection/tree/master/documents/case%234.png)
 
 
