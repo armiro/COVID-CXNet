@@ -1,7 +1,7 @@
 import os, glob, numpy as np, shutil, matplotlib.pyplot as plt, cv2
 # import tensorflow as tf
 import keras.callbacks as cb
-from keras.applications import ResNet50
+from keras.applications import ResNet50, DenseNet121
 from keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
 from keras.layers import Dense, Dropout
 # from keras.layers import GlobalAveragePooling2D, MaxPooling2D
@@ -62,13 +62,13 @@ augmenter = ImageDataGenerator(rotation_range=90, horizontal_flip=True, vertical
 test_augmenter = ImageDataGenerator(rescale=None)
 
 
-checkpoint = cb.ModelCheckpoint(filepath='./checkpoints/resnet50/eps={epoch:03d}_valAcc={val_accuracy:.4f}.hdf5',
+checkpoint = cb.ModelCheckpoint(filepath='./checkpoints/densenet121/eps={epoch:03d}_valAcc={val_accuracy:.4f}.hdf5',
                                 monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
 cb_list = [checkpoint]
 
 
 """create the classifier from pretrained models"""
-base_model = ResNet50(include_top=True, weights='imagenet')
+base_model = DenseNet121(include_top=True, weights='imagenet', input_shape=(224, 224, 3))
 base_model_out = base_model.output
 out = Dense(units=1, activation='sigmoid', name='output_layer')(base_model_out)
 classifier = Model(inputs=base_model.input, outputs=out)
@@ -78,7 +78,7 @@ print('number of pretrained network layers:', len(classifier.layers))
 
 
 """fine-tuning"""
-fine_tuning = classifier.fit(augmenter.flow(x=X_train, y=y_train, batch_size=16), callbacks=cb_list, epochs=10,
+fine_tuning = classifier.fit(augmenter.flow(x=X_train, y=y_train, batch_size=16), callbacks=cb_list, epochs=20,
                              verbose=1, validation_data=test_augmenter.flow(x=X_test, y=y_test))
 
 fig = plt.figure()
@@ -86,10 +86,22 @@ plt.plot(fine_tuning.history['loss'], color='r', label='training_loss')
 plt.plot(fine_tuning.history['val_loss'], color='g', label='validation_loss')
 plt.legend()
 plt.show()
-fig.savefig('./fine_tuning_history.png')
+fig.savefig('./checkpoints/densenet121/fine_tuning.png')
 
 
 """save the model to a json file"""
 model_json = classifier.to_json()
-with open("./checkpoints/resnet50/resnet50.json", "w") as json_file:
+with open("./checkpoints/densenet121/densenet121.json", "w") as json_file:
     json_file.write(model_json)
+
+
+"""classification report on the test-set"""
+y_pred = classifier.predict_generator(generator=test_augmenter.flow(x=X_test, batch_size=1, shuffle=False), steps=len(X_test))
+print('number of test-set images:', len(y_test))
+print(y_test)
+y_pred = np.round(np.reshape(a=y_pred, newshape=(1, -1)), decimals=2)[0]
+print(y_pred)
+y_pred_rnd = np.round(np.reshape(a=y_pred, newshape=(1, -1)))[0]
+cm = confusion_matrix(y_true=y_test, y_pred=y_pred_rnd)
+print(cm)
+print('accuracy:', (cm[0][0] + cm[1][1])/np.sum(cm))
