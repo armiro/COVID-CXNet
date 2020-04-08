@@ -47,7 +47,7 @@ def BEASF(image, gamma):
     :return: numpy.ndarray
     """
     m = int(np.mean(image, dtype=np.int32))
-    h = np.histogram(image, bins=256)[0] / 2500
+    h = np.histogram(image, bins=256)[0] / (image.shape[0] * image.shape[1])
     h_lower = subhist(image_pdf=h, minimum=0, maximum=m, normalize=True)
     h_upper = subhist(image_pdf=h, minimum=m, maximum=255, normalize=True)
 
