@@ -1,4 +1,4 @@
-import os, glob, numpy as np, shutil, matplotlib.pyplot as plt, cv2
+import os, glob, numpy as np, shutil, matplotlib.pyplot as plt, cv2.cv2 as cv2
 import tensorflow as tf, keras
 import keras.callbacks as cb
 
@@ -8,6 +8,7 @@ from keras.layers import Input, Conv2D, Dense, Add, Flatten, BatchNormalization,
 from keras import Model, optimizers
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
+from BEASF import BEASF
 
 
 def data_preparation(path):
@@ -37,6 +38,13 @@ def data_preparation(path):
 
     X = np.array([cv2.resize(image, dsize=(400, 400), interpolation=cv2.INTER_CUBIC) for image in X])
     X = np.array([np.expand_dims(a=image, axis=-1) for image in X])
+    X = X.astype(dtype=np.uint8)
+
+    # apply image enhancements and concat with the original image
+    X_beasf = np.array([BEASF(image=image, gamma=1.5) for image in X])
+    X_clahe = np.array([cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(image) for image in X])
+    X_clahe = np.array([np.expand_dims(a=image, axis=-1) for image in X_clahe])
+    X = np.concatenate((X, X_beasf, X_clahe), axis=-1)
     X = np.array([X[idx] / 255. for idx in range(len(X))])
 
     print('number of total dataset images:', len(X))
@@ -118,11 +126,11 @@ X_train, X_test, y_train, y_test = data_preparation(path='./chest_xray_images/')
 
 """data augmentation using keras"""
 augmenter = ImageDataGenerator(rotation_range=90, horizontal_flip=True, vertical_flip=True, rescale=None)
-test_augmenter = ImageDataGenerator(rescale=None)
+# test_augmenter = ImageDataGenerator(rescale=None)
 
 
 """model callbacks"""
-checkpoint = cb.ModelCheckpoint(filepath='./checkpoints/base_model/v1.1/eps={epoch:03d}_valAcc={val_accuracy:.4f}.hdf5',
+checkpoint = cb.ModelCheckpoint(filepath='./checkpoints/base_model/v1.2/eps={epoch:03d}_valAcc={val_accuracy:.4f}.hdf5',
                                 monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
 cb_list = [checkpoint]
 
@@ -136,25 +144,25 @@ print('number of network layers:', len(classifier.layers))
 
 """model training and learning curves"""
 training = classifier.fit(augmenter.flow(x=X_train, y=y_train, batch_size=32), callbacks=cb_list, epochs=100,
-                          verbose=1, validation_data=test_augmenter.flow(x=X_test, y=y_test))
+                          verbose=1, validation_data=(X_test, y_test))
 
 fig = plt.figure()
 plt.plot(training.history['loss'], color='r', label='training_loss')
 plt.plot(training.history['val_loss'], color='g', label='validation_loss')
 plt.legend()
 plt.show()
-fig.savefig('./checkpoints/base_model/v1.1/training_history.png')
+fig.savefig('./checkpoints/base_model/v1.2/training_history.png')
 
 
 """best results on the test-set"""
-weights_folder = './checkpoints/base_model/v1.1'
-_, best_weights = get_last_weights(weights_folder)
-acc = float(best_weights[best_weights.rfind('=')+1:best_weights.rfind('.')])
-print('best validation accuracy:', acc)
-classifier.load_weights(best_weights)
-delete_other_weights(folder=weights_folder, last_file=best_weights)
+# weights_folder = './checkpoints/base_model/v1.2'
+# _, best_weights = get_last_weights(weights_folder)
+# acc = float(best_weights[best_weights.rfind('=')+1:best_weights.rfind('.')])
+# print('best validation accuracy:', acc)
+# classifier.load_weights(best_weights)
+# delete_other_weights(folder=weights_folder, last_file=best_weights)
 
-y_pred = classifier.predict_generator(generator=test_augmenter.flow(x=X_test, batch_size=1, shuffle=False), steps=len(X_test))
+y_pred = classifier.predict(X_test)
 print('number of test-set images:', len(y_test))
 print(y_test)
 y_pred = np.round(np.reshape(a=y_pred, newshape=(1, -1)), decimals=2)[0]
@@ -167,6 +175,6 @@ print('accuracy:', (cm[0][0] + cm[1][1])/np.sum(cm))
 
 """save the model to a json file"""
 model_json = classifier.to_json()
-with open("./checkpoints/base_model/v1.1/base_model.json", "w") as json_file:
+with open("./checkpoints/base_model/v1.2/base_model.json", "w") as json_file:
     json_file.write(model_json)
 
