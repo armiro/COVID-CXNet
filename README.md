@@ -1,13 +1,13 @@
 # COVID-19 Detection
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/armiro/Covid19-Detection/blob/master/LICENSE)
-![license](https://img.shields.io/badge/development-30%25-yellow?style=flat-square)
+![license](https://img.shields.io/badge/development-35%25-yellow?style=flat-square)
 
 Detecting the novel coronavirus (aka 2019-nCov or COVID-19) from frontal chest X-ray images 
 using deep convolutional neural nets
 
 ## Data Collection
 Chest X-ray Images of patients with PCR-positive COVID-19 are collected from different sources, such as [SIRM](https://www.sirm.org/category/senza-categoria/covid-19/).
-Please cite this repo if you are using the CXR images:
+Please cite this repo if you are using CXR images:
 ```
 @article{armiro2020covidcxr,
   title={COVID-19 Chest X-ray Image Data Collection},
