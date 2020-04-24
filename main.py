@@ -1,14 +1,35 @@
-import os, glob, numpy as np, shutil, matplotlib.pyplot as plt, cv2.cv2 as cv2
+import os, glob, numpy as np, shutil, matplotlib.pyplot as plt, cv2.cv2 as cv2, seaborn as sns
 import tensorflow as tf, keras
-import keras.callbacks as cb
 
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
 from keras.layers import Input, Conv2D, Dense, Add, Flatten, BatchNormalization, Dropout
 # from keras.layers import GlobalAveragePooling2D, MaxPooling2D, Concatenate, Activation
 from keras import Model, optimizers
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.utils import resample
 from BEASF import BEASF
+# from livelossplot import PlotLossesKeras
+
+
+def data_resampling(X_train, X_test, y_train, y_test):
+    pos_upsampled_train = resample(X_train[y_train == 1], n_samples=len(X_train[y_train == 0]),
+                                   replace=True, random_state=20)
+    pos_upsampled_test = resample(X_test[y_test == 1], n_samples=len(X_test[y_test == 0]),
+                                  replace=True, random_state=20)
+
+    X_train_resampled = np.concatenate((X_train[y_train == 0], pos_upsampled_train))
+    X_test_resampled = np.concatenate((X_test[y_test == 0], pos_upsampled_test))
+    y_train_resampled = np.concatenate(([0 for _ in range(len(X_train[y_train == 0]))],
+                                        [1 for _ in range(len(X_train[y_train == 0]))]))
+    y_test_resampled = np.concatenate(([0 for _ in range(len(X_test[y_test == 0]))],
+                                       [1 for _ in range(len(X_test[y_test == 0]))]))
+
+    print('num resampled training-set samples:', len(X_train_resampled))
+    print('num resampled test-set samples:', len(X_test_resampled))
+    return X_train_resampled, X_test_resampled, y_train_resampled, y_test_resampled
 
 
 def data_preparation(path):
@@ -41,10 +62,10 @@ def data_preparation(path):
     X = X.astype(dtype=np.uint8)
 
     # apply image enhancements and concat with the original image
-    X_beasf = np.array([BEASF(image=image, gamma=1.5) for image in X])
-    X_clahe = np.array([cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(image) for image in X])
-    X_clahe = np.array([np.expand_dims(a=image, axis=-1) for image in X_clahe])
-    X = np.concatenate((X, X_beasf, X_clahe), axis=-1)
+    X = np.array([BEASF(image=image, gamma=1.5) for image in X])
+    # X_clahe = np.array([cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(image) for image in X])
+    # X_clahe = np.array([np.expand_dims(a=image, axis=-1) for image in X_clahe])
+    # X = np.concatenate((X, X_beasf, X_clahe), axis=-1)
     X = np.array([X[idx] / 255. for idx in range(len(X))])
 
     print('number of total dataset images:', len(X))
@@ -130,9 +151,12 @@ augmenter = ImageDataGenerator(rotation_range=90, horizontal_flip=True, vertical
 
 
 """model callbacks"""
-checkpoint = cb.ModelCheckpoint(filepath='./checkpoints/base_model/v1.2/eps={epoch:03d}_valAcc={val_accuracy:.4f}.hdf5',
-                                monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
-cb_list = [checkpoint]
+checkpoint = ModelCheckpoint(filepath='./checkpoints/base_model/v_free/eps={epoch:03d}_valLoss={val_loss:.4f}.hdf5',
+                             monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
+early_stopping = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1)
+# live_loss = PlotLossesKeras()
+
+cb_list = [checkpoint, early_stopping]
 
 
 """create the classifier model"""
@@ -143,25 +167,32 @@ print('number of network layers:', len(classifier.layers))
 
 
 """model training and learning curves"""
-training = classifier.fit(augmenter.flow(x=X_train, y=y_train, batch_size=32), callbacks=cb_list, epochs=100,
+training = classifier.fit(augmenter.flow(x=X_train, y=y_train, batch_size=32), callbacks=cb_list, epochs=150,
                           verbose=1, validation_data=(X_test, y_test))
 
-fig = plt.figure()
+fig = plt.figure(figsize=(16, 8))
+plt.subplot(1, 2, 1)
 plt.plot(training.history['loss'], color='r', label='training_loss')
 plt.plot(training.history['val_loss'], color='g', label='validation_loss')
 plt.legend()
+plt.subplot(1, 2, 2)
+plt.plot(training.history['accuracy'], color='r', label='training_accuracy')
+plt.plot(training.history['val_accuracy'], color='g', label='validation_accuracy')
+plt.legend()
 plt.show()
-fig.savefig('./checkpoints/base_model/v1.2/training_history.png')
+fig.savefig('./checkpoints/base_model/v_free/training_history.png')
 
 
 """best results on the test-set"""
-# weights_folder = './checkpoints/base_model/v1.2'
-# _, best_weights = get_last_weights(weights_folder)
-# acc = float(best_weights[best_weights.rfind('=')+1:best_weights.rfind('.')])
-# print('best validation accuracy:', acc)
-# classifier.load_weights(best_weights)
-# delete_other_weights(folder=weights_folder, last_file=best_weights)
+weights_folder = './checkpoints/base_model/v_free'
+_, best_weights = get_last_weights(weights_folder)
+acc = float(best_weights[best_weights.rfind('=')+1:best_weights.rfind('.')])
+print('best validation accuracy:', acc)
+classifier.load_weights(best_weights)
+delete_other_weights(folder=weights_folder, last_file=best_weights)
 
+
+"""classification reports"""
 y_pred = classifier.predict(X_test)
 print('number of test-set images:', len(y_test))
 print(y_test)
@@ -169,12 +200,24 @@ y_pred = np.round(np.reshape(a=y_pred, newshape=(1, -1)), decimals=2)[0]
 print(y_pred)
 y_pred_rnd = np.round(np.reshape(a=y_pred, newshape=(1, -1)))[0]
 cm = confusion_matrix(y_true=y_test, y_pred=y_pred_rnd)
+print('confusion matrix:')
 print(cm)
-print('accuracy:', (cm[0][0] + cm[1][1])/np.sum(cm))
+print('test-set accuracy:', (cm[0][0] + cm[1][1])/np.sum(cm))
+
+print('classification report:')
+print(classification_report(y_true=y_test, y_pred=y_pred_rnd,
+                            target_names=['normal', 'covid']))
+
+fig = plt.figure()
+sns.heatmap(data=cm, cmap='Blues', annot=True, annot_kws={'size': 14}, fmt='d',
+            vmin=0, vmax=len(y_test)/2.)
+plt.title('annotated heatmap for confusion matrix')
+plt.show()
+fig.savefig('./checkpoints/base_model/v_free/cm_heatmap.png')
 
 
 """save the model to a json file"""
-model_json = classifier.to_json()
-with open("./checkpoints/base_model/v1.2/base_model.json", "w") as json_file:
-    json_file.write(model_json)
+# model_json = classifier.to_json()
+# with open("./checkpoints/base_model/v1.5/base_model.json", "w") as json_file:
+#     json_file.write(model_json)
 
