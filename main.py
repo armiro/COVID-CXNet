@@ -8,7 +8,7 @@ from keras.layers import Input, Conv2D, Dense, Add, Flatten, BatchNormalization,
 from keras import Model, optimizers
 
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
 from sklearn.utils import resample
 from BEASF import BEASF
 # from livelossplot import PlotLossesKeras
@@ -208,12 +208,27 @@ print('classification report:')
 print(classification_report(y_true=y_test, y_pred=y_pred_rnd,
                             target_names=['normal', 'covid']))
 
-fig = plt.figure()
+fig1 = plt.figure()
 sns.heatmap(data=cm, cmap='Blues', annot=True, annot_kws={'size': 14}, fmt='d',
             vmin=0, vmax=len(y_test)/2.)
 plt.title('annotated heatmap for confusion matrix')
 plt.show()
-fig.savefig('./checkpoints/base_model/v_free/cm_heatmap.png')
+# fig1.savefig('./checkpoints/base_model/v_free/cm_heatmap.png')
+
+
+fpr, tpr, _ = roc_curve(y_true=y_test, y_score=y_pred, pos_label=None)
+roc_auc = auc(x=fpr, y=tpr)
+fig2 = plt.figure()
+plt.plot(fpr, tpr, 'b', label='AUC = %0.2f' % roc_auc)
+plt.title('Receiver Operating Characteristic')
+plt.legend()
+plt.plot([0, 1], [0, 1], 'r--')
+plt.xlim([0, 1])
+plt.ylim([0, 1])
+plt.ylabel('True Positive Rate')
+plt.xlabel('False Positive Rate')
+plt.show()
+# fig2.savefig('./checkpoints/base_model/v_free/roc.png')
 
 
 """save the model to a json file"""
