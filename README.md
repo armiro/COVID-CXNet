@@ -16,7 +16,7 @@ Please cite this repo if you are using CXR images:
   year={2020}
 }
 ```
-There are currently ~400 images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon.
+There are currently ~400 images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon. This dataset is the largest to best of my knowledge, as of 24/Apr/2020.
 
 ## Project Progress
 The project is in early stages and a pretty huge amount of new images are still in progress
