@@ -9,7 +9,7 @@ from keras import Model, optimizers
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
-from sklearn.utils import resample
+from sklearn.utils import resample, class_weight
 from BEASF import BEASF
 # from livelossplot import PlotLossesKeras
 
@@ -57,15 +57,15 @@ def data_preparation(path):
     X = np.concatenate((covid_images, normal_images))
     y = np.array(covid_labels + normal_labels)
 
-    X = np.array([cv2.resize(image, dsize=(400, 400), interpolation=cv2.INTER_CUBIC) for image in X])
+    X = np.array([cv2.resize(image, dsize=(300, 300), interpolation=cv2.INTER_CUBIC) for image in X])
     X = np.array([np.expand_dims(a=image, axis=-1) for image in X])
     X = X.astype(dtype=np.uint8)
 
     # apply image enhancements and concat with the original image
-    X = np.array([BEASF(image=image, gamma=1.5) for image in X])
-    # X_clahe = np.array([cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(image) for image in X])
-    # X_clahe = np.array([np.expand_dims(a=image, axis=-1) for image in X_clahe])
-    # X = np.concatenate((X, X_beasf, X_clahe), axis=-1)
+    X_beasf = np.array([BEASF(image=image, gamma=1.5) for image in X])
+    X_clahe = np.array([cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(image) for image in X])
+    X_clahe = np.array([np.expand_dims(a=image, axis=-1) for image in X_clahe])
+    X = np.concatenate((X, X_beasf, X_clahe), axis=-1)
     X = np.array([X[idx] / 255. for idx in range(len(X))])
 
     print('number of total dataset images:', len(X))
@@ -153,7 +153,7 @@ augmenter = ImageDataGenerator(rotation_range=90, horizontal_flip=True, vertical
 """model callbacks"""
 checkpoint = ModelCheckpoint(filepath='./checkpoints/base_model/v_free/eps={epoch:03d}_valLoss={val_loss:.4f}.hdf5',
                              monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
-early_stopping = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1)
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, min_delta=0.002)
 # live_loss = PlotLossesKeras()
 
 cb_list = [checkpoint, early_stopping]
@@ -167,8 +167,10 @@ print('number of network layers:', len(classifier.layers))
 
 
 """model training and learning curves"""
+class_weights = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
+print('class weights are:', class_weights)
 training = classifier.fit(augmenter.flow(x=X_train, y=y_train, batch_size=32), callbacks=cb_list, epochs=150,
-                          verbose=1, validation_data=(X_test, y_test))
+                          verbose=1, validation_data=(X_test, y_test), class_weight=class_weights)
 
 fig = plt.figure(figsize=(16, 8))
 plt.subplot(1, 2, 1)
@@ -213,13 +215,13 @@ sns.heatmap(data=cm, cmap='Blues', annot=True, annot_kws={'size': 14}, fmt='d',
             vmin=0, vmax=len(y_test)/2.)
 plt.title('annotated heatmap for confusion matrix')
 plt.show()
-# fig1.savefig('./checkpoints/base_model/v_free/cm_heatmap.png')
+fig1.savefig('./checkpoints/base_model/v_free/cm_heatmap.png')
 
 
 fpr, tpr, _ = roc_curve(y_true=y_test, y_score=y_pred, pos_label=None)
 roc_auc = auc(x=fpr, y=tpr)
 fig2 = plt.figure()
-plt.plot(fpr, tpr, 'b', label='AUC = %0.2f' % roc_auc)
+plt.plot(fpr, tpr, 'b', label='AUC = %0.4f' % roc_auc)
 plt.title('Receiver Operating Characteristic')
 plt.legend()
 plt.plot([0, 1], [0, 1], 'r--')
@@ -228,11 +230,11 @@ plt.ylim([0, 1])
 plt.ylabel('True Positive Rate')
 plt.xlabel('False Positive Rate')
 plt.show()
-# fig2.savefig('./checkpoints/base_model/v_free/roc.png')
+fig2.savefig('./checkpoints/base_model/v_free/roc.png')
 
 
 """save the model to a json file"""
-# model_json = classifier.to_json()
-# with open("./checkpoints/base_model/v1.5/base_model.json", "w") as json_file:
-#     json_file.write(model_json)
+model_json = classifier.to_json()
+with open("./checkpoints/base_model/v_free/base_model.json", "w") as json_file:
+    json_file.write(model_json)
 
