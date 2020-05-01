@@ -16,7 +16,7 @@ Please cite this repo if you are using CXR images:
   year={2020}
 }
 ```
-There are currently ~420 images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon. **This dataset is the largest to best of my knowledge, as of 1/May/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias. To get the complete dataset consisting of 420 COVID-19 pneumonia and 3000 normal images, [send me an email](mailto:arman@haghanifar.com).
+There are currently ~420 images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon. **This dataset is the largest to best of my knowledge, as of 2/May/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias. To get the complete dataset consisting of 430 COVID-19 pneumonia and 3000 normal images, [send me an email](mailto:arman@haghanifar.com).
 
 ## Project Progress
 The project is in early stages and a pretty huge amount of new images are still in progress
