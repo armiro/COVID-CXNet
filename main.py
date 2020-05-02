@@ -1,17 +1,18 @@
 import os, glob, numpy as np, shutil, matplotlib.pyplot as plt, cv2.cv2 as cv2, seaborn as sns
 import tensorflow as tf, keras
 
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
-from keras.layers import Input, Conv2D, Dense, Add, Flatten, BatchNormalization, Dropout
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
+from tensorflow.keras.layers import Input, Conv2D, Dense, Add, Flatten, BatchNormalization, Dropout
 # from keras.layers import GlobalAveragePooling2D, MaxPooling2D, Concatenate, Activation
-from keras import Model, optimizers
+from tensorflow.keras import Model, optimizers
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
 from sklearn.utils import resample, class_weight
 from BEASF import BEASF
 # from livelossplot import PlotLossesKeras
+# from tf_explain.callbacks.grad_cam import GradCAMCallback
 
 
 def data_resampling(X_train, X_test, y_train, y_test):
@@ -34,7 +35,7 @@ def data_resampling(X_train, X_test, y_train, y_test):
 
 def data_preparation(path):
     normal_images = list()
-    for img_name in glob.glob(pathname=path + '/normal/*'):
+    for img_name in glob.glob(pathname=path + '/normal/*')[:10]:
         img = load_img(path=img_name, color_mode='grayscale')
         img = img_to_array(img=img, data_format='channels_last')
         normal_images.append(img)
@@ -43,7 +44,7 @@ def data_preparation(path):
     print('number of normal chest xrays:', len(normal_images))
 
     covid_images = list()
-    for img_name in glob.glob(pathname=path + '/covid19/*'):
+    for img_name in glob.glob(pathname=path + '/covid19/*')[:10]:
         img = load_img(path=img_name, color_mode='grayscale')
         img = img_to_array(img=img, data_format='channels_last')
         covid_images.append(img)
@@ -57,7 +58,7 @@ def data_preparation(path):
     X = np.concatenate((covid_images, normal_images))
     y = np.array(covid_labels + normal_labels)
 
-    X = np.array([cv2.resize(image, dsize=(300, 300), interpolation=cv2.INTER_CUBIC) for image in X])
+    X = np.array([cv2.resize(image, dsize=(320, 320), interpolation=cv2.INTER_CUBIC) for image in X])
     X = np.array([np.expand_dims(a=image, axis=-1) for image in X])
     X = X.astype(dtype=np.uint8)
 
@@ -155,6 +156,8 @@ checkpoint = ModelCheckpoint(filepath='./checkpoints/base_model/v_free/eps={epoc
                              monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
 early_stopping = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, min_delta=0.002)
 # live_loss = PlotLossesKeras()
+# grad_cam = GradCAMCallback(validation_data=(X_test, y_test), class_index=1, layer_name='conv_layer5',
+#                            output_dir='./checkpoints/base_model/v_free_images/')
 
 cb_list = [checkpoint, early_stopping]
 
