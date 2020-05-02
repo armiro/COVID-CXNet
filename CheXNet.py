@@ -3,7 +3,6 @@ import cv2.cv2 as cv2, numpy as np
 from keras.applications import DenseNet121
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras import Model
-from keras.models import save_model
 
 
 IMG_PATH = ['./chest_xray_images/normal/15268.jpg', '0']
@@ -24,8 +23,9 @@ gap = GlobalAveragePooling2D(name='pooling_layer')(backbone_out)
 output = Dense(units=14, activation='sigmoid', name='output_layer')(gap)
 chexnet_model = Model(inputs=backbone.input, outputs=output)
 print(chexnet_model.summary())
-chexnet_model.load_weights('C:/Users/Arman/Desktop/Covid19-Detection/checkpoints/CheXNet/CheXNet_v0.3.0.h5')
-# save_model(model=chexnet_model, filepath='./checkpoints/CheXNet/CheXNet_model.hdf5', overwrite=True)
-chexnet_model.save(filepath='./checkpoints/CheXNet/CheXNet_model.hdf5')
-print(chexnet_model.predict(np.expand_dims(test_img, axis=0)))
 
+chexnet_model.load_weights('C:/Users/Arman/Desktop/Covid19-Detection/checkpoints/CheXNet/CheXNet_v0.3.0.h5')
+chexnet_model.compile(optimizer='adam', loss='binary_crossentropy')
+
+chexnet_model.save(filepath='./checkpoints/CheXNet/CheXNet_model.hdf5')
+print('sample prediction: \n', chexnet_model.predict(np.expand_dims(test_img, axis=0)))
