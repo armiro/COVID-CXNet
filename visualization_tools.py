@@ -64,7 +64,8 @@ class GradCAM:
         # use automatic differentiation to compute the gradients
         grads = tape.gradient(loss, convOutputs)
         # if gradients are too small (GradCAM is zero everywhere)
-        # grads = grads / (grads.numpy().max() - grads.numpy().min())
+        # equal to changing the value of 'eps' func arg
+        grads = grads / (grads.numpy().max() - grads.numpy().min())
         # compute the guided gradients
         castConvOutputs = tf.cast(convOutputs > 0, "float32")
         castGrads = tf.cast(grads > 0, "float32")
@@ -84,9 +85,10 @@ class GradCAM:
         # dimensions
         h, w = image.shape[:2]
         heatmap = cv2.resize(cam.numpy(), (w, h))
+        print('avg heatmap value:', np.mean(heatmap))
         print('max heatmap value:', np.max(heatmap))
         # ignore certain values lower than a threshold to get sharper heatmaps
-        # heatmap[np.where(heatmap < 0.0015)] = 0
+        # heatmap[np.where(heatmap < 1)] = 0
         if normalize:
             # normalize the heatmap such that all values lie in the range
             # [0, 1], scale the resulting values to the range [0, 255],
@@ -94,8 +96,8 @@ class GradCAM:
             numer = heatmap - np.min(heatmap)
             denom = (heatmap.max() - heatmap.min()) + eps
             heatmap = numer / denom
-            heatmap = (heatmap * 255).astype("uint8")
-        return heatmap
+            heatmap = (heatmap * 255)
+        return heatmap.astype("uint8")
 
     def overlay_heatmap(self, heatmap, image, alpha=0.5, colormap=cv2.COLORMAP_VIRIDIS):
         # apply the supplied color map to the heatmap and then
