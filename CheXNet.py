@@ -20,9 +20,9 @@ print('external image(s) shape:', test_img.shape)
 backbone = DenseNet121(include_top=False, weights=None, input_shape=(320, 320, 3))
 backbone_out = backbone.output
 gap = GlobalAveragePooling2D(name='pooling_layer')(backbone_out)
-output = Dense(units=14, activation='sigmoid', name='output_layer')(gap)
+output = Dense(units=14, activation='softmax', name='output_layer')(gap)
 chexnet_model = Model(inputs=backbone.input, outputs=output)
-print(chexnet_model.summary())
+chexnet_model.summary()
 
 chexnet_model.load_weights('C:/Users/Arman/Desktop/Covid19-Detection/checkpoints/CheXNet/CheXNet_v0.3.0.h5')
 chexnet_model.compile(optimizer='adam', loss='binary_crossentropy')
