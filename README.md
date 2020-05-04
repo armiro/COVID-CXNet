@@ -1,6 +1,6 @@
-# COVID-19 Detection
+# COVID-CXNet
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/armiro/Covid19-Detection/blob/master/LICENSE)
-![license](https://img.shields.io/badge/development-70%25-yellow?style=flat-square)
+![license](https://img.shields.io/badge/development-80%25-yellow?style=flat-square)
 
 Detecting the novel coronavirus (aka 2019-nCov or COVID-19) from frontal chest X-ray images 
 using deep convolutional neural nets
