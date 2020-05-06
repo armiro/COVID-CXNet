@@ -1,6 +1,6 @@
 # COVID-CXNet
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/armiro/Covid19-Detection/blob/master/LICENSE)
-![license](https://img.shields.io/badge/development-80%25-yellow?style=flat-square)
+![license](https://img.shields.io/badge/development-95%25-yellow?style=flat-square)
 
 Detecting the novel coronavirus (aka 2019-nCov or COVID-19) from frontal chest X-ray images 
 using deep convolutional neural nets
@@ -16,7 +16,7 @@ Please cite this repo if you are using CXR images:
   year={2020}
 }
 ```
-There are currently ~430 images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon. **This dataset is the largest to best of my knowledge, as of 5/May/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias.
+There are currently ~435 images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon. **This dataset is the largest to best of my knowledge, as of 7/May/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias.
 
 ## Project Progress
 The project is in early stages and a pretty huge amount of new images are still in progress
