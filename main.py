@@ -35,7 +35,7 @@ def data_resampling(X_train, X_test, y_train, y_test):
 
 def data_preparation(path):
     normal_images = list()
-    for img_name in glob.glob(pathname=path + '/normal/*')[:10]:
+    for img_name in glob.glob(pathname=path + '/normal/*'):
         img = load_img(path=img_name, color_mode='grayscale')
         img = img_to_array(img=img, data_format='channels_last')
         normal_images.append(img)
@@ -44,7 +44,7 @@ def data_preparation(path):
     print('number of normal chest xrays:', len(normal_images))
 
     covid_images = list()
-    for img_name in glob.glob(pathname=path + '/covid19/*')[:10]:
+    for img_name in glob.glob(pathname=path + '/covid19/*'):
         img = load_img(path=img_name, color_mode='grayscale')
         img = img_to_array(img=img, data_format='channels_last')
         covid_images.append(img)
@@ -124,7 +124,7 @@ def delete_other_weights(folder, last_file):
     print('deleted all weights files saved before, except the last one.')
 
 
-def build_model(input_shape):
+def base_model(input_shape):
     a0 = Input(shape=input_shape, name='input_layer')
     a1 = Conv2D(filters=32, kernel_size=5, strides=2, padding='valid', activation='relu', name='conv_layer1')(a0)
     a2 = Conv2D(filters=32, kernel_size=3, strides=2, padding='valid', activation='relu', name='conv_layer2')(a1)
@@ -163,7 +163,7 @@ cb_list = [checkpoint, early_stopping]
 
 
 """create the classifier model"""
-classifier = build_model(input_shape=X_train[0].shape)
+classifier = base_model(input_shape=X_train[0].shape)
 classifier.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 print(classifier.summary())
 print('number of network layers:', len(classifier.layers))
