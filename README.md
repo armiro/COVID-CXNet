@@ -16,4 +16,4 @@ Please cite this repo if you are using CXR images:
   year={2020}
 }
 ```
-There are currently **~450** images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon. **This dataset is the largest to best of my knowledge, as of 15/May/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias.
+There are currently **~460** images with different sizes and formats, and the data will be updated regularly. Metadata will be added as soon. **This dataset is the largest to best of my knowledge, as of 15/May/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias.
