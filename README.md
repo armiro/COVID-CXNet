@@ -9,10 +9,10 @@ using deep convolutional neural nets
 Chest X-ray Images of patients with PCR-positive COVID-19 are collected from different sources, such as [SIRM](https://www.sirm.org/category/senza-categoria/covid-19/).
 Please cite this repo if you are using CXR images:
 ```
-@article{armiro2020covidcxr,
-  title={COVID-19 Chest X-ray Image Data Collection},
-  author={Arman Haghanifar},
-  url={https://github.com/armiro/Covid19-Detection},
+@article{haghanifar2020covidcxnet,
+  title={COVID-CXNet: Detecting COVID-19 in Frontal Chest X-ray Images using Deep Convolutional Neural Networks},
+  author={Arman Haghanifar, Mahdiyar Molahasani Majdabadi, Seokbum Ko, Anh Dinh},
+  url={https://github.com/armiro/COVID-CXNet},
   year={2020}
 }
 ```
