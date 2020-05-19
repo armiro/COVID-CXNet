@@ -103,5 +103,11 @@ class GradCAM:
         # apply the supplied color map to the heatmap and then
         # overlay the heatmap on the input image
         heatmap = cv2.applyColorMap(heatmap, colormap)
-        output = cv2.addWeighted(image, alpha, heatmap, 1 - alpha, 0)
+        # if the input image is grey-scale, convert it to 3-dim
+        if len(image.shape) == 2 or image.shape[-1] != 3:
+            image = cv2.cvtColor(src=image, code=cv2.COLOR_GRAY2RGB)
+        # if image px values are in [0, 1], upscale to [0, 255]
+        if np.max(image) <= 1.0:
+            image = image * 255.0
+        output = cv2.addWeighted(image.astype('uint8'), alpha, heatmap, 1 - alpha, 0)
         return output
