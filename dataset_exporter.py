@@ -12,6 +12,15 @@ def collect_images_from(path, exclude_early_stages=True, exclude_pediatrics=True
     normal_images = np.array(normal_images)
     print('num normal CXRs:', len(normal_images))
 
+    cap_images = list()
+    for img_name in glob.glob(pathname=path + '/chexpert_pneumonia/*'):
+        img = load_img(path=img_name, color_mode='grayscale')
+        img = img_to_array(img=img, data_format='channels_last')
+        cap_images.append(img)
+
+    cap_images = np.array(cap_images)
+    print('num community-acquired pneumonia CXRs:', len(cap_images))
+
     covid_images = list()
     num_early_stage_images = 0
     num_pediatric_images = 0
@@ -39,10 +48,11 @@ def collect_images_from(path, exclude_early_stages=True, exclude_pediatrics=True
     print('num collected covid CXRs:', len(covid_images))
 
     normal_labels = [0 for _ in range(len(normal_images))]
-    covid_labels = [1 for _ in range(len(covid_images))]
+    cap_labels = [1 for _ in range(len(cap_images))]
+    covid_labels = [2 for _ in range(len(covid_images))]
 
-    X = np.concatenate((covid_images, normal_images))
-    y = np.array(covid_labels + normal_labels)
+    X = np.concatenate((covid_images, cap_images, normal_images))
+    y = np.array(covid_labels + cap_labels + normal_labels)
     return X, y
 
 
