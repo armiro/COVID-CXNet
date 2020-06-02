@@ -1,4 +1,16 @@
+import numpy as np, copy, cv2.cv2 as cv2, matplotlib.pyplot as plt, tensorflow as tf
 
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras import Model, callbacks as cb, optimizers
+from tensorflow.keras.models import load_model
+from tensorflow.keras import Model
+from tensorflow.keras.layers import Dense, Dropout
+
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.utils import class_weight
 
 
 def match_histogram(source, template):
@@ -137,11 +149,10 @@ def BEASF(image, gamma):
     res[:, :] = mapping_vector[image[:, :]]
     return res
 
+
 # run with previously segmented images
-X = np.load('/content/drive/My Drive/Datasets/covid_cxr_dataset/cxr_samples_segmented.npy')
-y = np.load('/content/drive/My Drive/Datasets/covid_cxr_dataset/cxr_labels_multiclass.npy')
-X = np.concatenate((X[500:800], X[8000:8050]), axis=0)
-y = np.concatenate((y[500: 800], y[8000: 8050]))
+X = np.load('/path/to/cxr_samples_segmented.npy')
+y = np.load('/path/to/cxr_labels_multiclass.npy')
 
 # one-hot encoding of labels
 transformer = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), [0])])
@@ -162,10 +173,6 @@ for idx, img in enumerate(X):
 print('num COVID-19 images:', num_covid_samples)
 print('num normal images:', num_normal_samples)
 print('num CAP samples:', num_cap_samples)
-
-# manual label smoothing by 0.1 deviation
-# y[np.where(y == 0)] = 0.1
-# y[np.where(y == 1)] = 0.9
 
 # perform histogram matching since majority of the images are from NIH-14 dataset
 base_image = X[0]
@@ -190,25 +197,23 @@ plt.axis('off')
 plt.title(label='random image from dataset')
 plt.show()
 
-X_train, X_test, y_train, y_test = train_test_split(X, y_column_encoded, test_size=0.2, 
-                                                    random_state=18)
+X_train, X_test, y_train, y_test = train_test_split(X, y_column_encoded, test_size=0.2, random_state=18)
 
 # NOTE: sklearn train_test_split function copies the dataset, hence deleting initial data
 # variables will increase RAM space drastically (~ x2)
 del X, X_beasf, X_clahe
 
 
-
 augmenter = ImageDataGenerator(rotation_range=170, horizontal_flip=True, vertical_flip=True, 
                                zoom_range=[0.8, 1.5], brightness_range=[0.5, 1.3], rescale=1./255,
                                width_shift_range=0.2, height_shift_range=0.2, fill_mode='constant')
 
-checkpoint = cb.ModelCheckpoint('/content/drive/My Drive/covid_model/eps={epoch:03d}_valLoss={val_loss:.4f}.hdf5',
+checkpoint = cb.ModelCheckpoint('/path/to/eps={epoch:03d}_valLoss={val_loss:.4f}.hdf5',
                                 monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
 cb_list = [checkpoint]
 
 
-backbone = load_model("/content/drive/My Drive/CheXNet_model.hdf5")
+backbone = load_model("/path/to/CheXNet_model.hdf5")
 fc = Dense(units=10, activation='relu', name='fc')(backbone.layers[-2].output)
 do = Dropout(rate=0.2, name='dropout')(fc)
 output = Dense(units=3, activation='softmax', name='pred')(do)
@@ -229,8 +234,7 @@ fine_tuning = classifier.fit(augmenter.flow(x=X_train, y=y_train, batch_size=16)
                              steps_per_epoch=len(X_train)//16,
                              callbacks=cb_list, epochs=20, verbose=1, 
                              validation_data=(X_test, y_test),
-                             class_weight=dict({0: class_weights[0], 1: class_weights[1], 
-                                                2: class_weights[2]}))
+                             class_weight=dict({0: class_weights[0], 1: class_weights[1], 2: class_weights[2]}))
 
 fig = plt.figure(figsize=(16, 8))
 plt.subplot(1, 2, 1)
@@ -242,21 +246,15 @@ plt.plot(fine_tuning.history['accuracy'], color='r', label='training_accuracy')
 plt.plot(fine_tuning.history['val_accuracy'], color='g', label='validation_accuracy')
 plt.legend()
 plt.show()
-# fig.savefig('/content/drive/My Drive/covid_model/fine_tuning.png')
+fig.savefig('/path/to/fine_tuning.png')
 
-classifier.load_weights('/content/drive/My Drive/covid_model/eps=001_valLoss=1.0944.hdf5')
+# classifier.load_weights('/path/to/checkpoints/eps=?_valLoss=?.hdf5')
 print('number of test-set images:', len(y_test))
-
 y_pred = classifier.predict(X_test)
 y_pred = np.array([np.argmax(pred) for pred in y_pred])
 print('predicted labels: \n', y_pred)
-
 y_test = np.array([np.argmax(label) for label in y_test])
 print('true labels: \n', y_test)
-
-# y_pred = np.round(np.reshape(a=y_pred, newshape=(1, -1)), decimals=2)[0]
-# print(y_pred)
-# y_pred_rnd = np.round(np.reshape(a=y_pred, newshape=(1, -1)))[0]
 cm = confusion_matrix(y_true=y_test, y_pred=y_pred)
 print('confusion matrix:')
 print(cm)
