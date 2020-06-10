@@ -10,10 +10,10 @@ Chest X-ray Images of patients with PCR-positive COVID-19 are collected from dif
 Please cite this repo if you are using CXR images:
 ```
 @article{haghanifar2020covidcxnet,
-  title={COVID-CXNet: Detecting COVID-19 in Frontal Chest X-ray Images using Deep Convolutional Neural Networks},
+  title={COVID-CXNet: Detecting COVID-19 in Frontal Chest X-ray Images using Deep Learning},
   author={Arman Haghanifar, Mahdiyar Molahasani Majdabadi, Seokbum Ko},
   url={https://github.com/armiro/COVID-CXNet},
   year={2020}
 }
 ```
-There are currently **~735** images with different sizes and formats, and the data will be updated regularly. Metadata will be added soon. **This dataset is the largest to best of my knowledge, as of 03/Jun/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages od disease progression). Besides, a `p` letter at the ned of image name means that the image is taken from pediatric patient.
+There are currently **~740** images with different sizes and formats, and the data will be updated regularly. Metadata will be added soon. **This dataset is the largest to best of my knowledge, as of 03/Jun/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages od disease progression). Besides, a `p` letter at the ned of image name means that the image is taken from pediatric patient.
