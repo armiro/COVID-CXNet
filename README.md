@@ -2,7 +2,7 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/armiro/Covid19-Detection/blob/master/LICENSE)
 ![license](https://img.shields.io/badge/development-100%25-yellow?style=flat-square)
 
-Detecting the novel coronavirus pneumonia in frontal chest X-ray images using transfer learning of CheXNet with a focus on Grad-CAM visualiztions
+Detecting the novel coronavirus pneumonia in frontal chest X-ray images using transfer learning of CheXNet with a focus on Grad-CAM visualiztions. Code repo for paper available on arXiv: [COVID-CXNet](https://arxiv.org/abs/2006.13807)
 
 ## Data Collection
 Chest x-ray images of patients with (mostly) PCR-positive COVID-19 are collected from different publicly available sources, such as [SIRM](https://www.sirm.org/category/senza-categoria/covid-19/).
@@ -11,7 +11,7 @@ Please cite the associated paper if you are using CXR images. If this repo helpe
 @article{haghanifar2020covidcxnet,
   title={COVID-CXNet: Detecting COVID-19 in Frontal Chest X-ray Images using Deep Learning},
   author={Arman Haghanifar, Mahdiyar Molahasani Majdabadi, Seokbum Ko},
-  url={https://github.com/armiro/COVID-CXNet},
+  url={https://arxiv.org/abs/2006.13807},
   year={2020}
 }
 ```
