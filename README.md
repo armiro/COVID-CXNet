@@ -6,7 +6,7 @@ Detecting the novel coronavirus pneumonia in frontal chest X-ray images using tr
 
 - Preprint available on arXiv: [COVID-CXNet](https://arxiv.org/abs/2006.13807)
 - Quick look at the final best results on paperswithcode: [leaderboard](https://paperswithcode.com/paper/covid-cxnet-detecting-covid-19-in-frontal)
-- Article about detailed steps and challenges toward developing COVID-CXNet on Medium: _soon_
+- Article about detailed steps and challenges toward developing COVID-CXNet on Medium: [Thoughts on COVID-19 Pneumonia Detection in Chest X-ray Images](https://medium.com/@armiro/thoughts-on-covid-19-pneumonia-detection-in-chest-x-ray-images-59f8950e98bb)
 
 ## Data Collection
 [![license](https://img.shields.io/badge/license-CC%20BY%204.0-red?style=flat-square)](https://creativecommons.org/licenses/by/4.0/)
@@ -28,4 +28,4 @@ If you are merging COVID-19 CXR images into your own datasets, please attribute 
 - Download COVID-19 images as a single ZIP file: [FigShare](https://figshare.com/articles/COVID-19_Chest_X-Ray_Image_Repository/12580328) (755 images, next update on 800 images)
 - Download the complete dataset from Kaggle: *coming soon*
 
-There are currently **~780** images with different sizes and formats, and the data will be updated regularly. Metadata will be added soon. **This dataset is the largest to the best of my knowledge, as of 09/Jul/2020.** Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages of disease progression). Besides, a `p` letter at the end of image name means that the image is taken from pediatric patient.
+There are currently **~800** images with different sizes and formats, and the data will be updated regularly. Metadata will be added soon. Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages of disease progression). Besides, a `p` letter at the end of image name means that the image is taken from pediatric patient.
