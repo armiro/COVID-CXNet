@@ -59,7 +59,7 @@ seaborn==0.10.0
 six==1.14.0
 sklearn==0.0
 tensorboard==2.0.2
-tensorflow==2.0.0
+tensorflow==2.5.0
 tensorflow-estimator==2.0.1
 tensorflow-model-optimization==0.2.1
 termcolor==1.1.0
