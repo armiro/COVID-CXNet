@@ -29,3 +29,6 @@ If you are merging COVID-19 CXR images into your own datasets, please attribute 
 - Download the complete dataset from Kaggle: *coming soon*
 
 There are currently **900** images with different sizes and formats, and the data will not be updated anymore. Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages of disease progression). Besides, a `p` letter at the end of image name means that the image is taken from pediatric patient.
+
+##
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="217"/>](https://www.buymeacoffee.com/armiro#support)
