@@ -1,4 +1,4 @@
-from tensorflow.keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import glob, numpy as np, matplotlib.pyplot as plt, cv2.cv2 as cv2
 
 
@@ -9,16 +9,18 @@ def collect_images_from(path, exclude_early_stages=True, exclude_pediatrics=True
         img = img_to_array(img=img, data_format='channels_last')
         normal_images.append(img)
 
-    normal_images = np.array(normal_images)
+    normal_images = np.array(normal_images, dtype=object)
+    normal_images = np.random.choice(normal_images, size=3674, replace=False)
     print('num normal CXRs:', len(normal_images))
 
     cap_images = list()
-    for img_name in glob.glob(pathname=path + '/chexpert_pneumonia/*'):
+    for img_name in glob.glob(pathname=path + '/cap/*'):
         img = load_img(path=img_name, color_mode='grayscale')
         img = img_to_array(img=img, data_format='channels_last')
         cap_images.append(img)
 
-    cap_images = np.array(cap_images)
+    cap_images = np.array(cap_images, dtype=object)
+    cap_images = np.random.choice(cap_images, size=3500, replace=False)
     print('num community-acquired pneumonia CXRs:', len(cap_images))
 
     covid_images = list()
@@ -44,7 +46,7 @@ def collect_images_from(path, exclude_early_stages=True, exclude_pediatrics=True
 
     print("num total early stage images:", num_early_stage_images)
     print("num total pediatric images:", num_pediatric_images)
-    covid_images = np.array(covid_images)
+    covid_images = np.array(covid_images, dtype=object)
     print('num collected covid CXRs:', len(covid_images))
 
     normal_labels = [0 for _ in range(len(normal_images))]
@@ -85,7 +87,7 @@ def save_dataset(data, labels):
 
 def main():
     data_path = './chest_xray_images/'
-    X, y = collect_images_from(path=data_path, exclude_early_stages=True, exclude_pediatrics=True)
+    X, y = collect_images_from(path=data_path, exclude_early_stages=False, exclude_pediatrics=False)
     X = resize_images_of(X=X)
     show_random_image_from(X=X)
     save_dataset(data=X, labels=y)
