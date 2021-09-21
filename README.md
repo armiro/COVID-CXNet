@@ -25,7 +25,10 @@ Please cite the associated paper if you are using CXR images. If this repo helpe
 If you are merging COVID-19 CXR images into your own datasets, please attribute the authors in any publications (DOI: [10.6084/m9.figshare.12580328](https://doi.org/10.6084/m9.figshare.12580328). You may include the version of the dataset found on the figshare webpage for reproducibility.
 
 - View COVID-19 images in the directory: [chest-xray-images/covid19](https://github.com/armiro/COVID-CXNet/tree/master/chest_xray_images/covid19)
-- Download COVID-19 images as a single ZIP file: [FigShare](https://figshare.com/articles/COVID-19_Chest_X-Ray_Image_Repository/12580328) (755 images, next update on 900 images)
+- Download COVID-19 images as a single ZIP file: [FigShare](https://figshare.com/articles/COVID-19_Chest_X-Ray_Image_Repository/12580328)
 - Download the complete dataset from Kaggle: *coming soon*
 
-There are currently **~840** images with different sizes and formats, and the data will be updated regularly. Metadata will be added soon. Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages of disease progression). Besides, a `p` letter at the end of image name means that the image is taken from pediatric patient.
+There are currently **900** images with different sizes and formats, and the data will not be updated anymore. Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages of disease progression). Besides, a `p` letter at the end of image name means that the image is taken from pediatric patient.
+
+##
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="217"/>](https://www.buymeacoffee.com/armiro#support)
