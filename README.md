@@ -8,6 +8,10 @@ Detecting the novel coronavirus pneumonia in frontal chest X-ray images using tr
 - Quick look at the final best results on paperswithcode: [leaderboard](https://paperswithcode.com/paper/covid-cxnet-detecting-covid-19-in-frontal)
 - Article about detailed steps and challenges toward developing COVID-CXNet on Medium: [Thoughts on COVID-19 Pneumonia Detection in Chest X-ray Images](https://medium.com/@armiro/thoughts-on-covid-19-pneumonia-detection-in-chest-x-ray-images-59f8950e98bb)
 
+## Requirements
+- The code has been written in **Python 3.9.x** and requires **TensorFlow v2.6.0**
+- Install the dependencies using `pip install -r requirements.txt`
+
 ## Data Collection
 [![license](https://img.shields.io/badge/license-CC%20BY%204.0-red?style=flat-square)](https://creativecommons.org/licenses/by/4.0/)
 
@@ -29,6 +33,3 @@ If you are merging COVID-19 CXR images into your own datasets, please attribute 
 - Download the complete dataset from Kaggle: *coming soon*
 
 There are currently **900** images with different sizes and formats, and the data will not be updated anymore. Normal CXRs are collected from different datasets, without a pediatric image bias. Note that a `-` sign at the end of image name indicates that CXR did not reveal any abnormalities, but the patient had CT/PCR-proven COVID-19 infection (probably patient is in early stages of disease progression). Besides, a `p` letter at the end of image name means that the image is taken from pediatric patient.
-
-##
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="217"/>](https://www.buymeacoffee.com/armiro#support)
