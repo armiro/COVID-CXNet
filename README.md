@@ -1,6 +1,8 @@
 # COVID-CXNet
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/armiro/COVID-CXNet/blob/master/LICENSE)
 ![license](https://img.shields.io/badge/development-100%25-yellow?style=flat-square)
+[![license](https://img.shields.io/badge/preprint-arxiv-b31b1b?style=flat-square)](https://arxiv.org/abs/2006.13807)
+[![license](https://img.shields.io/badge/doi-10.1007/s11042--022--12156--z-1e8bc3?style=flat-square)](https://link.springer.com/article/10.1007/s11042-022-12156-z)
 
 Detecting the novel coronavirus pneumonia in frontal chest X-ray images using transfer learning of CheXNet with a focus on Grad-CAM visualiztions. 
 
@@ -14,6 +16,8 @@ Detecting the novel coronavirus pneumonia in frontal chest X-ray images using tr
 
 ## Data Collection
 [![license](https://img.shields.io/badge/license-CC%20BY%204.0-red?style=flat-square)](https://creativecommons.org/licenses/by/4.0/)
+[![license](https://img.shields.io/badge/doi-10.6084/m9.figshare.12580328-1e8bc3?style=flat-square)](https://figshare.com/articles/dataset/COVID-19_Chest_X-Ray_Image_Repository/12580328)
+![license](https://img.shields.io/badge/num%20images-900-f39c12?style=flat-square)
 
 Chest x-ray images of patients with (mostly) PCR-positive COVID-19 are collected from different publicly available sources, such as [SIRM](https://www.sirm.org/category/senza-categoria/covid-19/).
 Please cite the associated paper if you are using CXR images. If this repo helped you with your research stuff, you can star it.
